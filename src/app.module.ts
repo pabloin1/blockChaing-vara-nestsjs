@@ -1,23 +1,25 @@
-// app.module.ts
 import { Module } from '@nestjs/common';
 import { GearModule } from './gear/gear.module';
 import { ConfigModule } from '@nestjs/config';
-import { AuthController } from './auth/auth.controller';
-import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { PrismaService } from './prisma/prisma.service';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
+import { EventModule } from './event/event.module';
+import { TypeEventModule } from './type-event/type-event.module';
+import { CertificateModule } from './certificate/certificate.module';
+import { SkillModule } from './skill/skill.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), 
     GearModule, 
-    AuthModule, UserModule
+    AuthModule, 
+    UserModule, 
+    EventModule, 
+    TypeEventModule,
+    CertificateModule, 
+    SkillModule
   ],
-  controllers: [AuthController, UserController],
-  providers: [AuthService, PrismaService, UserService],
+  providers: [PrismaService],
 })
-
 export class AppModule {}
