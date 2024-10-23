@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  email     String   @unique
+  wallet    String?
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id              Int    @id @default(autoincrement())
+  name            String @unique
+  id_organization Int
+  id_Type_Event   Int
+
+  organization Organization @relation(fields: [id_organization], references: [id])
+  type         Type_Event   @relation(fields: [id_Type_Event], references: [id])
+}
+
+model Type_Event {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  events Event[] // Relación uno a muchos: un tipo de evento puede tener varios eventos
+}
+
+model Organization {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  events       Event[] // Relación uno a muchos: una organización puede tener varios eventos
+  certificates Certificate[] // Relación uno a muchos: una organización puede emitir varios certificados
+}
+
+model Skill {
+  id           Int                @id @default(autoincrement())
+  name         String             @unique
+  certificates CertificateSkill[] // Relación con la tabla pivot CertificateSkill
+}
+
+model Certificate {
+  id              Int                @id @default(autoincrement())
+  name            String             @unique
+  description     String
+  price           Float
+  rating          Float
+  skills          CertificateSkill[] // Relación con la tabla pivot CertificateSkill
+  lesson          Int
+  duration        Int
+  skill_level     String
+  enrolled        Float
+  articles        Int
+  downloads       Int
+  organization    Organization       @relation(fields: [id_organization], references: [id])
+  id_organization Int
+}
+
+/// La tabla pivot para la relación muchos a muchos entre Certificate y Skill
+model CertificateSkill {
+  certificateId Int
+  skillId       Int
+  certificate   Certificate @relation(fields: [certificateId], references: [id])
+  skill         Skill       @relation(fields: [skillId], references: [id])
+
+  @@id([certificateId, skillId]) // Clave compuesta para evitar duplicados
+}
